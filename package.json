@@ -8,10 +8,16 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["blockchain", "crypto", "bitcoin"],
+  "keywords": [
+    "blockchain",
+    "crypto",
+    "bitcoin"
+  ],
   "author": "Diego Franco Roy",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   }
 }
