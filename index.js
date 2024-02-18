@@ -1,8 +1,8 @@
 import express from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
-import handleErrors from './middleware/handle-errors.js';
-import blockchainRouter from './routes/blockchain.router.js';
+import handleErrors from './src/middleware/handle-errors.js';
+import blockchainRouter from './src/routes/blockchain.router.js';
 
 const app = express();
 app.use(express.json());
@@ -15,7 +15,7 @@ const swaggerDocs = swaggerJSDoc({
             title: "Blockchain API",
         },
     },
-    apis: ["./routes/blockchain.router.js"]
+    apis: ["./src/routes/blockchain.router.js"]
 });
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
