@@ -1,61 +1,67 @@
 import { createHash } from 'crypto';
 
+export class Block {
+    constructor(index, timestamp, data, proof, previousHash = '', nonce = 0) {
+        this.index = index;
+        this.timestamp = timestamp;
+        this.data = data;
+        this.proof = proof;
+        this.previousHash = previousHash;
+        this.nonce = nonce;
+        this.hash = this.calculateHash();
+    }
+
+    calculateHash() {
+        const blockString = JSON.stringify(this);
+        return createHash('sha256').update(blockString).digest('hex');
+    }
+}
+
 export class Blockchain {
     constructor() {
-        this.chain = [];
-        this.createBlock(1, '0');
+        this.chain = [this.#createGenesisBlock()];
     }
 
-    createBlock(proof, previousHash) {
-        const block = {
-            index: this.chain.length + 1,
-            timestamp: new Date().toISOString(),
-            proof: proof,
-            previousHash: previousHash
-        };
-        this.chain.push(block);
-        return block;
+    #createGenesisBlock() {
+        return new Block(1, new Date().toISOString(), 'Genesis Block', 0, '0');
     }
 
-    getPreviousBlock() {
+    #getLastBlock() {
         return this.chain[this.chain.length - 1];
     }
 
-    proofOfWork(previousProof) {
-        let newProof = 1;
-        let checkProof = false;
-        while (!checkProof) {
+    #addBlock(newBlock) {
+        newBlock.previousHash = this.#getLastBlock().hash;
+        newBlock.hash = newBlock.calculateHash();
+        this.chain.push(newBlock);
+    }
+
+    #proofOfWork(previousProof) {
+        let newProof = 0;
+        while (true) {
             const hashOperation = createHash('sha256').update((newProof ** 2 - previousProof ** 2).toString()).digest('hex');
             if (hashOperation.slice(0, 4) === '0000') {
-                checkProof = true;
-            } else {
-                newProof += 1;
+                return newProof;
             }
+            newProof++;
         }
-        return newProof;
     }
 
-    hash(block) {
-        const blockString = JSON.stringify(block);
-        return createHash('sha256').update(blockString).digest('hex');
+    mineBlock(block) {
+        const previousProof = this.#getLastBlock().proof;
+        block.proof = this.#proofOfWork(previousProof);
+        this.#addBlock(block);
     }
 
-    isChainValid(chain) {
-        let previousBlock = chain[0];
-        let blockIndex = 1;
-        while (blockIndex < chain.length) {
-            const block = chain[blockIndex];
-            if (block.previousHash !== this.hash(previousBlock)) {
+    isValidChain() {
+        for (let i = 1; i < this.chain.length; i++) {
+            const currentBlock = this.chain[i];
+            const previousBlock = this.chain[i - 1];
+            const checkPreviousHash = currentBlock.previousHash !== previousBlock.hash;
+            // const checkCurrentHash = currentBlock.hash !== currentBlock.calculateHash();
+            if (checkPreviousHash) {
                 return false;
             }
-            const previousProof = previousBlock.proof;
-            const proof = block.proof;
-            const hashOperation = createHash('sha256').update((proof ** 2 - previousProof ** 2).toString()).digest('hex');
-            if (hashOperation.slice(0, 4) !== '0000') {
-                return false;
-            }
-            previousBlock = block;
-            blockIndex += 1;
         }
         return true;
     }

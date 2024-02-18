@@ -6,7 +6,7 @@ const router = Router();
 export default function () {
    /**
     * @swagger
-    * /api/get-chain:
+    * /api/blockchain:
     *   get:
     *     summary: Get the full blockchain
     *     responses:
@@ -24,12 +24,26 @@ export default function () {
     *                 length:
     *                   type: integer
     */
-   router.get('/get-chain', controllers.getChain);
+   router.get('/blockchain', controllers.getChain);
    /**
     * @swagger
-    * /api/mine-block:
-    *   get:
+    * /api/mine:
+    *   post:
     *     summary: Mine a new block
+    *     consumes:
+    *       - application/json
+    *     produces:
+    *       - application/json
+    *     parameters:
+    *          - in: body
+    *            name: body
+    *            schema:
+    *              type: object
+    *              required:
+    *                  - data
+    *              properties:
+    *                  data:
+    *                    type: string
     *     responses:
     *       201:
     *         description: Block mined successfully
@@ -49,10 +63,10 @@ export default function () {
     *                 previousHash:
     *                   type: string
     */
-   router.get('/mine-block', controllers.mineBlock);
+   router.post('/mine', controllers.mineBlock);
    /**
     * @swagger
-    * /api/is-valid-chain:
+    * /api/is-valid:
     *   get:
     *     summary: Check if the blockchain is valid
     *     responses:
@@ -66,7 +80,7 @@ export default function () {
     *                 message:
     *                   type: string
     */
-   router.get('/is-valid-chain', controllers.isValidChain);
+   router.get('/is-valid', controllers.isValidChain);
 
    return router;
 }
