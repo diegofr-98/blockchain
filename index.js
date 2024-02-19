@@ -29,6 +29,6 @@ const swaggerDocs = swaggerJSDoc({
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.use('/api', blockchainRouter());
-app.use('/', (req, res) => res.status(200).redirect(apiDocsPath));
+app.use('/', (req, res) => res.status(200).redirect('api-docs'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
